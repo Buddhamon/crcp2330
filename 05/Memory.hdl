@@ -29,18 +29,23 @@ CHIP Memory {
     PARTS:
     // Put your code here:
 
-    DMux4Way(in = load, sel = address[14..15], a = r0, b = r1, c = r2, d = r3);
-    RAM16K(in = in, load = load, address = address, out = out);
-    Screen(in = in, load = load, address = address, out = out);
-    Keyboard(out = out);
+    DMux4Way(in = load, sel = address[13..14], a = rom1, b = rom2, c = screen, d = keyboard);
+    Or(a = rom1, b = rom2, out = rom);
+    RAM16K(in = in, load = rom, address = address[0..13], out = romOut);
+    Screen(in = in, load = screen, address = address[0..12], out = screenOut);
+    Keyboard(out = keyboardOut);
 
-    RAM4K(in = in, load = r0, address = address[0..11], out = out0);
-    RAM4K(in = in, load = r1, address = address[0..11], out = out1);
-    RAM4K(in = in, load = r2, address = address[0..11], out = out2);
-    RAM4K(in = in, load = r3, address = address[0..11], out = out3);
-    Mux4Way16(a = out0, b = out1, c = out2, d = out3, sel = address[12..13], out = out);
+    Mux4Way16(a = romOut, b = romOut, c = screenOut, d = keyboardOut, sel = address[13..14], out = out);
     
 }
+// ROM      0000H		0000 0000 0000 0000
+//						0011 1111 1111 1111
+
+// Screen   4000H  		0100 0000 0000 0000
+//						0101 1111 1111 1111
+
+// Keyboard 6000H  		0110 0000 0000 0000
+//
 
 //CHIP DMux4Way {
 //    IN in, sel[2];
@@ -61,6 +66,10 @@ CHIP Memory {
 //                   // or 0 if no key is currently pressed, 
 //                   // or one the special codes listed in Figure 5.5.
 
-
+//CHIP Mux8Way16 {
+//    IN a[16], b[16], c[16], d[16],
+//       e[16], f[16], g[16], h[16],
+//       sel[3];
+//    OUT out[16];
 
 
