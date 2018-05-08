@@ -40,4 +40,87 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+
+    // Decoding
+        Not(in = instruction[15], out = aInstruction);
+        Not(in = aInstruction, out = cInstruction);
+
+        And(a = cInstruction, b = instruction[5], out = w1); // first step for aLoad
+        Or(a = aInstruction, b = w1, out = aLoad);
+        And(a = cInstruction, b = instruction[4], out = dLoad);
+        And(a = cInstruction, b = instruction[3], out = writeM);
+
+    // Mux
+        Mux16(a = aluOut, b = instruction, sel = aLoad, out = aIn);
+
+    // A Register
+        ARegister(in = aIn, load = aLoad, out = aOut, out[0..14] = addressM);
+
+    // D Register
+        DRegister(in = aluOut, load = dLoad, out = dOut);
+
+    // Mux
+        Mux16(a = aOut, b = inM, sel = instruction[12], out = aORm);
+
+    // Program Counter
+        PC(in = aOut, load = false, inc = true, reset = reset, out[0..14] = pc);
+
+    // ALU
+        ALU(x = dOut, y = aORm, zx = instruction[11], nx = instruction[10], zy = instruction[9], ny = instruction[8], f = instruction[7], no = instruction[6], out = aluOut, out = outM, zr = zr, ng = ng);
+
 }
+
+// 0000000000000010 - @R2
+// 1110101010001000 - M=0
+// 0000000000000001 - @R1
+// 1111110000010000 - D=M
+// 0000000000010000 - @temp
+// 1110001100001000 - M=D
+// 0000000000000000 - @R0
+// 1111110000010000 - D=M
+// 0000000000010110 - @END
+// 1110001100000010 - D;JEQ
+// 0000000000010000 - @temp
+// 1111110000010000 - D=M
+// 0000000000010110 - @END
+// 1110001100000010 - D;JEQ
+// 0000000000000000 - @R0
+// 1111110000010000 - D=M
+// 0000000000000010 - @R2
+// 1111000010001000 - M=D+M
+// 0000000000010000 - @temp
+// 1111110010001000 - M=M-1
+// 0000000000001010 - @MULTLOOP
+// 1110101010000111 - 0;JMP
+// 0000000000010110 - @END
+// 1110101010000111 - 0;JMP
+
+// CHIP Register {
+//     IN in[16], load;
+//     OUT out[16];
+
+// CHIP Mux16 {
+//     IN a[16], b[16], sel;
+//     OUT out[16];
+
+//CHIP ALU {
+//    IN  
+//        x[16], y[16],  // 16-bit inputs        
+//        zx, // zero the x input?
+//        nx, // negate the x input?
+//        zy, // zero the y input?
+//        ny, // negate the y input?
+//        f,  // compute out = x + y (if 1) or x & y (if 0)
+//        no; // negate the out output?
+//
+//    OUT 
+//        out[16], // 16-bit output
+//        zr, // 1 if (out == 0), 0 otherwise
+//        ng; // 1 if (out < 0),  0 otherwise
+
+// CHIP PC {
+//     IN in[16],load,inc,reset;
+//     OUT out[16];
+
+
+
