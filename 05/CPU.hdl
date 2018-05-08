@@ -51,7 +51,7 @@ CHIP CPU {
         And(a = cInstruction, b = instruction[3], out = writeM);
 
     // Mux
-        Mux16(a = aluOut, b = instruction, sel = aLoad, out = aIn);
+        Mux16(b = aluOut, a = instruction, sel = w1, out = aIn);
 
     // A Register
         ARegister(in = aIn, load = aLoad, out = aOut, out[0..14] = addressM);
@@ -62,38 +62,24 @@ CHIP CPU {
     // Mux
         Mux16(a = aOut, b = inM, sel = instruction[12], out = aORm);
 
-    // Program Counter
-        PC(in = aOut, load = false, inc = true, reset = reset, out[0..14] = pc);
-
     // ALU
         ALU(x = dOut, y = aORm, zx = instruction[11], nx = instruction[10], zy = instruction[9], ny = instruction[8], f = instruction[7], no = instruction[6], out = aluOut, out = outM, zr = zr, ng = ng);
 
-}
+    // Program Counter
 
-// 0000000000000010 - @R2
-// 1110101010001000 - M=0
-// 0000000000000001 - @R1
-// 1111110000010000 - D=M
-// 0000000000010000 - @temp
-// 1110001100001000 - M=D
-// 0000000000000000 - @R0
-// 1111110000010000 - D=M
-// 0000000000010110 - @END
-// 1110001100000010 - D;JEQ
-// 0000000000010000 - @temp
-// 1111110000010000 - D=M
-// 0000000000010110 - @END
-// 1110001100000010 - D;JEQ
-// 0000000000000000 - @R0
-// 1111110000010000 - D=M
-// 0000000000000010 - @R2
-// 1111000010001000 - M=D+M
-// 0000000000010000 - @temp
-// 1111110010001000 - M=M-1
-// 0000000000001010 - @MULTLOOP
-// 1110101010000111 - 0;JMP
-// 0000000000010110 - @END
-// 1110101010000111 - 0;JMP
+        And(a = zr, b = instruction[1], out = jeq);
+        And(a = ng, b = instruction[2], out = jlt);
+        Or(a = zr, b = ng, out = w2);
+        Not(in = w2, out = positive);
+        And(a = positive, b = instruction[0], out = jgt);
+        Or(a = jeq, b = jlt, out = jle);
+        Or(a = jle, b = jgt, out = jump);
+        And(a = cInstruction, b = jump, out=pcLoad);
+        Not(in = pcLoad, out = pcInc);
+
+        PC(in = aOut, load = pcLoad, inc = pcInc, reset = reset, out[0..14] = pc);
+
+}
 
 // CHIP Register {
 //     IN in[16], load;
