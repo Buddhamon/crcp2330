@@ -1,0 +1,36 @@
+// Will Lacey
+// May 8th 2018
+// Game of Life in Jack - Map
+
+class Map 
+{
+   field Array map;
+
+   constructor Map new() 
+   {  
+
+      return this;   // a constructor is expected to return a reference to the new object
+   }
+
+   method void draw() 
+   {
+      var int i;
+      var int j;
+      let i = 0;
+      let j = 0;
+
+      do Screen.setColor(true);
+      while(i < 512)
+      {
+         let j = 0;
+         while(j < 256)
+         {
+            do Screen.drawPixel(i, j);
+            let j = j + 1;
+         }
+         let i = i + 1;
+      }
+
+      return;
+   }
+}

@@ -1,0 +1,32 @@
+// Will Lacey
+// May 8th 2018
+// Game of Life in Jack - Cell
+
+class Cell 
+{
+   field boolean alive;
+
+   constructor Cell new() 
+   {  
+      
+      return this;   // a constructor is expected to return a reference to the new object
+   }
+
+   // Turns on the cell
+   method void turn_on() 
+   {
+      let alive = true;
+      return;
+   }
+
+   // Turns off the cell
+   method void turn_of() 
+   {
+      let alive = false;
+      return;
+   }
+
+   //Getters
+   method boolean get_alive() { return alive; }
+   
+}

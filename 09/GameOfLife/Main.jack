@@ -1,0 +1,13 @@
+// Will Lacey
+// May 8th 2018
+// Game of Life in Jack
+
+class Main
+{
+	function void main()
+	{
+		var Map map;
+		do map.draw();
+		return;
+	}
+}
