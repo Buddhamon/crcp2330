@@ -10,6 +10,7 @@
 #include <vector>
 #include <cmath>
 #include <map>
+#include <bitset>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ void initializeMaps();
 void removeComments();
 void removeWhiteSpace();
 void deleteEmptyLines();
-void replaceLabels();
+void replaceAddresses();
 void replaceInstructions();
 void outputHackFile(char*);
 
@@ -41,7 +42,7 @@ int main(int argc, char* inputFile[])
 	removeComments();
 	removeWhiteSpace();
 	deleteEmptyLines();
-	replaceLabels();
+	replaceAddresses();
 	replaceInstructions();
 
 	outputHackFile(inputFile[1]);
@@ -163,22 +164,41 @@ void deleteEmptyLines()
 }
 
 // Code is temporary and incorrect, currently this function serves to handle labels and addresses
-void replaceLabels()
+void replaceAddresses()
 {
 	for(int i = linesOfCode.size()-1; i >= 0; i--)
 	{
-		bool isLabel = true;
-		for(int j = 0; j < linesOfCode[i].length() && isLabel; j++)
+		bool isAddress = true;
+		char operation = linesOfCode[i].at(0);
+		string address = "";
+		for(int j = 1; j < linesOfCode[i].length() && isAddress; j++)
 		{
 			char c = linesOfCode[i].at(j);
-			if(c == '@' || c == '(')	
+			if(operation == '@' || operation == '(')	
 			{
-				linesOfCode[i] = "_" + linesOfCode[i]; // Temporary insertion to handle labels
-				isLabel = false;
+				if(c != ')')
+				{
+					address = address + c;
+				}
+				// isAddress = false;
 			}
 			else
 			{
-				isLabel = false;
+				linesOfCode[i] = "_" + linesOfCode[i]; // Temporary insertion to handle labels
+				isAddress = false;
+			}
+		}
+		if(isAddress)
+		{
+			if(!isalpha(address.at(0)))
+			{
+				int binary = stoi(address);
+				string binaryCode = bitset<16>(binary).to_string(); //to binary
+				linesOfCode[i] = binaryCode;
+			}
+			else
+			{
+				// Add to address table
 			}
 		}
 	}
@@ -190,13 +210,13 @@ void replaceInstructions()
 	for(int i = linesOfCode.size()-1; i >= 0; i--)
 	{
 		char c = linesOfCode[i].at(0); // Temporary insertion to handle labels
-		if(c != '_') // Temporary insertion to handle labels
+		if(c == '_') // Temporary insertion to handle labels
 		{
 			string dest = "";
 			string comp = "";
 			string jump = "";
 			char operation = ' ';
-			for(int j = 0; j < linesOfCode[i].length(); j++)
+			for(int j = 1; j < linesOfCode[i].length(); j++)
 			{
 				c = linesOfCode[i].at(j);
 				if(operation == ' ' && c != '=' && c != ';')
