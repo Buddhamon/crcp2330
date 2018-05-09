@@ -28,6 +28,8 @@ map<string, string> destMap;
 map<string, string> compMap;
 map<string, string> jumpMap;
 map<string, string> addressMap;
+int availableAddress = 16;
+int labelCount = 0;
 
 // Main Runner for Assembler.cpp
 int main(int argc, char* inputFile[])
@@ -111,6 +113,32 @@ void initializeMaps()
 	jumpMap["JNE"] = 	"101";
 	jumpMap["JNE"] = 	"110";
 	jumpMap["JMP"] = 	"111";
+
+	addressMap["SP"] = 		"0";
+	addressMap["LCL"] = 	"1";
+	addressMap["ARG"] = 	"2";
+	addressMap["THIS"] = 	"3";
+	addressMap["THAT"] = 	"4";
+
+	addressMap["R0"] = 		"0";
+	addressMap["R1"] = 		"1";
+	addressMap["R2"] = 		"2";
+	addressMap["R3"] = 		"3";
+	addressMap["R4"] = 		"4";
+	addressMap["R5"] = 		"5";
+	addressMap["R6"] = 		"6";
+	addressMap["R7"] = 		"7";
+	addressMap["R8"] = 		"8";
+	addressMap["R9"] = 		"9";
+	addressMap["R10"] = 	"10";
+	addressMap["R11"] = 	"11";
+	addressMap["R12"] = 	"12";
+	addressMap["R13"] = 	"13";
+	addressMap["R14"] = 	"14";
+	addressMap["R15"] = 	"15";
+	addressMap["SCREEN"] = 	"16384";
+	addressMap["KBD"] = 	"24576";
+
 }
 
 // Deletes all code that follows "//"" 
@@ -166,6 +194,13 @@ void deleteEmptyLines()
 // Code is temporary and incorrect, currently this function serves to handle labels and addresses
 void replaceAddresses()
 {
+	for(int i = linesOfCode.size()-1; i >= 0; i--) // First loop filters out Unwanted Label Symbols
+	{
+		if(linesOfCode[i].at(0) == '(')	
+		{	
+			labelCount++;
+		}
+	}
 	for(int i = linesOfCode.size()-1; i >= 0; i--)
 	{
 		bool isAddress = true;
@@ -180,7 +215,14 @@ void replaceAddresses()
 				{
 					address = address + c;
 				}
-				// isAddress = false;
+				else
+				{ 
+					int temp = i+1 - labelCount;
+					addressMap[address] = to_string(temp); // Label Symbol
+					linesOfCode.erase(linesOfCode.begin() + i);
+					labelCount--;
+					isAddress = false;
+				}
 			}
 			else
 			{
@@ -190,16 +232,24 @@ void replaceAddresses()
 		}
 		if(isAddress)
 		{
-			if(!isalpha(address.at(0)))
+			if(isalpha(address.at(0)))
 			{
-				int binary = stoi(address);
-				string binaryCode = bitset<16>(binary).to_string(); //to binary
-				linesOfCode[i] = binaryCode;
+				map<string, string>::iterator it;
+				it = addressMap.find(address);
+			  	if (it != addressMap.end())
+			  	{
+					address = addressMap.find(address)->second;
+			  	}
+				else
+				{
+					addressMap[address] = to_string(availableAddress); // variable symbol
+					address = to_string(availableAddress);
+					availableAddress++;
+				}
 			}
-			else
-			{
-				// Add to address table
-			}
+			int binary = stoi(address);
+			string binaryCode = bitset<16>(binary).to_string(); //to binary
+			linesOfCode[i] = binaryCode;
 		}
 	}
 }
@@ -247,9 +297,34 @@ void replaceInstructions()
 				}
 			}
 			string binaryCode = "111";
-			binaryCode = binaryCode + compMap.find(comp)->second;
-			binaryCode = binaryCode + destMap.find(dest)->second;
-			binaryCode = binaryCode + jumpMap.find(jump)->second;
+
+			map<string, string>::iterator it;
+			it = compMap.find(comp);
+  			if (it != destMap.end())
+				binaryCode = binaryCode + compMap.find(comp)->second;
+			else
+			{
+				cout << "Error: C instruction not found" << endl;
+				exit(1);
+			}
+
+			it = destMap.find(dest);
+  			if (it != destMap.end())
+				binaryCode = binaryCode + destMap.find(dest)->second;
+			else
+			{
+				cout << "Error: C instruction not found" << endl;
+				exit(1);
+			}
+
+			it = jumpMap.find(jump);
+  			if (it != destMap.end())
+				binaryCode = binaryCode + jumpMap.find(jump)->second;
+			else
+			{
+				cout << "Error: C instruction not found" << endl;
+				exit(1);
+			}
 			linesOfCode[i] = binaryCode;
 		}
 	}
@@ -263,7 +338,7 @@ void outputHackFile(char* inputFile)
 	ofstream file(outputFile);
 	for(int i = 0; i < linesOfCode.size()-1; i++)
 	{
-		file << linesOfCode[i] << endl;
+			file << linesOfCode[i] << endl;
 	}
 	file << linesOfCode[linesOfCode.size()-1];
 }
