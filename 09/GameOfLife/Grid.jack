@@ -4,29 +4,152 @@
 
 class Grid 
 {
+   field Array grid; // 32 by 64, squares with side of 8 pixels?
    field int grid_rows;
    field int grid_cols;
    field int grid_length;
-   field Array grid; // 64 by 32, squares with side of 8 pixels?
+
+   field int totalAliveCells;
 
    constructor Grid new() 
    {  
-      var int i;
-      let i = 0;
+      var int index;
+      let index = 0;
 
       let grid_rows = 32;
       let grid_cols = 64;
-      let grid_length = 64*32;
+      let grid_length = 32 * 64;
+      let totalAliveCells = 0;
 
-      let grid = Array.new(grid_length); // constructs the array
+      let grid = Array.new(grid_length); // constructs the array for grid
 
-      while(i < grid_length) // initializing array
+      while(index < grid_length) // initializing grid
       {
-         let grid[i] = Cell.new(i);
-         let i = i + 1;
+         let grid[index] = Cell.new_i(index);
+         let index = index + 1;
       }
 
       return this;   // a constructor is expected to return a reference to the new object
+   }
+
+   method void tick()
+   {
+      var int row;
+      var int col;
+      var int rule;
+      var Cell cell;
+      var int index;
+      var Grid temp_grid;
+
+      let index = 0;
+      while(index < grid_length) // initializing temp_grid
+      {
+         let cell = grid[index];
+         let temp_grid[index] = Cell.new_i(cell);
+         let index = index + 1;
+      }
+
+      let totalAliveCells = 0;
+      let row = 0;
+      let col = 0;
+
+      //Check all cells
+      while(row < grid_rows)
+      {
+         let col = 0;
+         while(col < grid_cols)
+         { 
+            let index = getCellIndex(row, col);
+            let rule = checkCell(row, col);
+            if(rule = 1)
+            {
+               do cell.dies();
+            }
+            if(rule = 2)
+            {
+               // do nothing
+            }
+            if(rule = 3)
+            {
+               do cell.dies();
+            }
+            if(rule = 4)
+            {
+               do cell.spawns();
+               let totalAliveCells = totalAliveCells + 1;
+            }
+            else
+            {
+               do Output.printString("1 tick - Rule Error ");
+               do Sys.error(0);
+            }
+            let col = col + 1;
+         }
+         let row = row + 1;
+      }
+      return;
+   }
+
+   method int checkCell(int row, int col)
+   {
+      var int neighborSum;
+
+      var boolean up;
+      var boolean right;
+      var boolean down;
+      var boolean left;
+      let up = false;
+      let right = false;
+      let down = false;
+      let left = false;
+
+      if(row > 0) { let up = true;}
+      if(col < grid_cols) { let right = true;}
+      if(row < 0) { let down = true;}
+      if(col > 0) { let left = true;}
+
+      if(up)
+      {
+         //if()
+         //{
+
+         //}
+      }
+      if(up & right)
+      {
+      
+      }
+      if(right)
+      {
+      
+      }
+      if(down & right)
+      {
+      
+      }
+      if(down)
+      {
+      
+      }
+      if(down & left)
+      {
+      
+      }
+      if(left)
+      {
+      
+      }
+      if(up & left)
+      {
+      
+      }
+
+      // check 8 directions
+      // make sure not edge
+
+      // respond 4 rules
+
+      return -1;
    }
 
    method int getCellIndex(int row, int col)
@@ -57,63 +180,29 @@ class Grid
       return index;
    }
 
-   method void temp()
+   method void draw() 
    {
-      var Cell a;
-      var int index;
-      var int i;
-
-
-      let index = getCellIndex(0, 0);
-      //do Output.printInt(index);
-      //do Output.println();
-      let a = grid[index];
-      do a.draw();
-
-      let index = getCellIndex(grid_rows - 1, grid_cols-1);
-      //do Output.printInt(index);
-      //do Output.println();
-      let a = grid[index];
-      do a.draw();
-
-      let index = getCellIndex(30, 60);
-      //do Output.printInt(index);
-      //do Output.println();
-      let a = grid[index];
-      do a.draw();
-
-      let index = getCellIndex(29, 60);
-      //do Output.printInt(index);
-      //do Output.println();
-      let a = grid[index];
-      do a.draw();
-
-      let index = getCellIndex(5, 0);
-      //do Output.printInt(index);
-      //do Output.println();
-      let a = grid[index];
-      do a.draw();
-
-      let index = getCellIndex(1, 1);
-      do Output.printInt(index);
-      do Output.println();
-      let a = grid[index];
-      do a.draw();
-
-      //let i = 0;
-      //while(i < grid_length)
-      //{
-      //   let a = grid[i];
-      //   do a.draw();
-      //   let i = i + 1;
-      //}
 
       return;
    }
 
-   method void draw() 
-   {
+   //Getters
+   method int getTotalAliveCells() { return totalAliveCells; }
 
+   method void dispose()
+   {
+      var int index;
+      var Cell cell;
+
+      let index = 0;
+      while(index < grid_length) // initializing grid
+      {
+         let cell = grid[index];
+         do cell.dispose();
+         let index = index + 1;
+      }
+      do grid.dispose();
+      do Memory.deAlloc(this);  // uses an OS routine to recycle the memory held by the object
       return;
    }
 }

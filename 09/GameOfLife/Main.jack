@@ -7,13 +7,20 @@ class Main
 	function void main()
 	{
 		var Grid grid;
+		var boolean running;
 		var int index;
+
 		let grid = Grid.new();
 
-		//do grid.draw();
-		let index = grid.getCellIndex(31, 63);
-		//do Output.printInt(index);
-		do grid.temp();
+		// make map or spawn seed
+
+		while(running)
+		{
+			// tick, update cells
+			do grid.tick();
+			// quit if cells alive = 0, or when user quits
+		}
+		
 		return;
 	}
 }

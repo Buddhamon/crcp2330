@@ -7,22 +7,29 @@ class Cell
    field boolean alive;
    field int index;
 
-   constructor Cell new(int i) 
+   constructor Cell new_i(int i) 
    {  
       let index = i;
       let alive = true;
       return this;   // a constructor is expected to return a reference to the new object
    }
 
+   constructor Cell new_c(Cell c) 
+   {  
+      let index = c.getIndex();
+      let alive = c.isAlive();
+      return this;   // a constructor is expected to return a reference to the new object
+   }
+
    // Turns on the cell
-   method void turn_on() 
+   method void spawns() 
    {
       let alive = true;
       return;
    }
 
    // Turns off the cell
-   method void turn_of() 
+   method void dies() 
    {
       let alive = false;
       return;
@@ -51,6 +58,13 @@ class Cell
    }
 
    //Getters
-   method boolean get_alive() { return alive; }
+   method int getIndex() { return index; }
+   method boolean isAlive() { return alive; }
+
+   method void dispose()
+   {
+      do Memory.deAlloc(this);  // uses an OS routine to recycle the memory held by the object
+      return;
+   }
    
 }

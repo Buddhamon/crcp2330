@@ -1,4 +1,4 @@
-function Cell.new 0
+function Cell.new_i 0
 push constant 2
 call Memory.alloc 1
 pop pointer 0
@@ -9,7 +9,19 @@ not
 pop this 0
 push pointer 0
 return
-function Cell.turn_on 0
+function Cell.new_c 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+call Cell.getIndex 1
+pop this 1
+push argument 0
+call Cell.isAlive 1
+pop this 0
+push pointer 0
+return
+function Cell.spawns 0
 push argument 0
 pop pointer 0
 push constant 0
@@ -17,7 +29,7 @@ not
 pop this 0
 push constant 0
 return
-function Cell.turn_of 0
+function Cell.dies 0
 push argument 0
 pop pointer 0
 push constant 0
@@ -89,8 +101,21 @@ pop temp 0
 label IF_END0
 push constant 0
 return
-function Cell.get_alive 0
+function Cell.getIndex 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function Cell.isAlive 0
 push argument 0
 pop pointer 0
 push this 0
+return
+function Cell.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
 return
