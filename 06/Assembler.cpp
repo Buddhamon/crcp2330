@@ -1,3 +1,9 @@
+/*
+* Will Lacey - Nand2Tetris
+* May 9th, 2018
+* Assembler program written in c++ for Hack language
+*/
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -12,6 +18,7 @@ void removeComments();
 void removeWhiteSpace();
 void deleteEmptyLines();
 void replaceLabels();
+void replaceInstructions();
 void outputHackFile(char*);
 
 vector<string> linesOfCode;
@@ -20,6 +27,7 @@ map<string, string> comp;
 map<string, string> jump;
 map<string, string> addressMap;
 
+// Main Runner for Assembler.cpp
 int main(int argc, char* inputFile[])
 {
 	if(argc < 2)
@@ -37,6 +45,7 @@ int main(int argc, char* inputFile[])
 	return 0;
 }
 
+// Parses code inside the commandline argument 
 void readASMMFile(char* inputFile)
 {
 	string line = "";
@@ -48,6 +57,7 @@ void readASMMFile(char* inputFile)
 	}
 }
 
+// Initializes instruction maps 
 void initializeMaps()
 {
 	dest["null"] = 	"000";
@@ -99,6 +109,7 @@ void initializeMaps()
 	jump["JMP"] = 	"111";
 }
 
+// Deletes all code that follows "//"" 
 void removeComments()
 {
 	string comments = "//";
@@ -120,6 +131,7 @@ void removeComments()
 	}
 }
 
+// Removes white space characters defined in the initial c++ library
 void removeWhiteSpace()
 {
 	for(int i = 0; i < linesOfCode.size(); i++)
@@ -135,6 +147,7 @@ void removeWhiteSpace()
 	}
 }
 
+// Deletes lines of code that have been stripped down to an empty instruction
 void deleteEmptyLines()
 {
 	for(int i = linesOfCode.size()-1; i >= 0; i--)
@@ -146,11 +159,35 @@ void deleteEmptyLines()
 	}
 }
 
+// Code is temporary and incorrect, currently this function serves to handle labels and addresses
 void replaceLabels()
+{
+	for(int i = linesOfCode.size()-1; i >= 0; i--)
+	{
+		bool isLabel = true;
+		for(int j = 0; j < linesOfCode[i].length() && isLabel; j++)
+		{
+			char c = linesOfCode[i].at(j);
+			if(c == '@' || c == "(")	
+			{
+				linesOfCode[i] = "_" + linesOfCode[i]; // Temporary insertion to handle labels
+				isLabel = false;
+			}
+			else
+			{
+				isLabel = false;
+			}
+		}
+	}
+}
+
+// Replaces Hack c instructions with binary equivalents
+void replaceInstructions()
 {
 
 }
 
+// Output of Assembler.cpp, creates a .hack file containing binary hack code
 void outputHackFile(char* inputFile)
 {
 	string outputFile = inputFile;
