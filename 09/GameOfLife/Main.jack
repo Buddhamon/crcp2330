@@ -9,16 +9,28 @@ class Main
 		var Grid grid;
 		var boolean running;
 		var int index;
+		var char escape;
 
 		let grid = Grid.new();
+		do grid.map(1);
 
-		// make map or spawn seed
+		// make grid or spawn seed
 
+		let running = true;
 		while(running)
 		{
-			// tick, update cells
-			do grid.tick();
-			// quit if cells alive = 0, or when user quits
+			do Sys.wait(300);
+		//	do grid.tick();
+			do grid.draw();
+		
+			if(grid.getTotalAliveCells() = 0) // population has died
+			{
+				let running = false;
+			}
+			if(Keyboard.keyPressed() = 81) // user has held down 'q'
+			{
+				let running = false;
+			}
 		}
 		
 		return;

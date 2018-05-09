@@ -32,6 +32,31 @@ class Grid
       return this;   // a constructor is expected to return a reference to the new object
    }
 
+   method void map(int option)
+   {
+      var Cell cell;
+      var int index;
+
+      if(option = 1) // rock
+      {
+         let totalAliveCells = 4;
+         let index = getCellIndex(15, 31);
+         let cell = grid[index];
+         do cell.spawns();
+         let index = getCellIndex(15, 32);
+         let cell = grid[index];
+         do cell.spawns();
+         let index = getCellIndex(16, 31);
+         let cell = grid[index];
+         do cell.spawns();
+         let index = getCellIndex(16, 32);
+         let cell = grid[index];
+         do cell.spawns();
+      }
+
+      return;
+   }
+
    method void tick()
    {
       var int row;
@@ -248,7 +273,16 @@ class Grid
 
    method void draw() 
    {
+      var int index;
+      var Cell cell;
 
+      let index = 0;
+      while(index < grid_length)
+      {
+         let cell = grid[index];
+         do cell.draw();
+         let index = index + 1;
+      }
       return;
    }
 
@@ -261,7 +295,7 @@ class Grid
       var Cell cell;
 
       let index = 0;
-      while(index < grid_length) // initializing grid
+      while(index < grid_length)
       {
          let cell = grid[index];
          do cell.dispose();

@@ -5,7 +5,6 @@ pop pointer 0
 push argument 0
 pop this 1
 push constant 0
-not
 pop this 0
 push pointer 0
 return
@@ -36,7 +35,7 @@ push constant 0
 pop this 0
 push constant 0
 return
-function Cell.draw 2
+function Cell.draw 3
 push argument 0
 pop pointer 0
 push this 1
@@ -49,6 +48,8 @@ push constant 64
 call Math.multiply 2
 sub
 pop local 0
+push constant 0
+pop local 2
 push this 0
 if-goto IF_TRUE0
 goto IF_FALSE0
@@ -57,6 +58,12 @@ push constant 0
 not
 call Screen.setColor 1
 pop temp 0
+label WHILE_EXP0
+push local 2
+push constant 7
+lt
+not
+if-goto WHILE_END0
 push local 0
 push constant 8
 call Math.multiply 2
@@ -66,20 +73,32 @@ call Math.multiply 2
 push local 0
 push constant 8
 call Math.multiply 2
-push constant 7
+push local 2
 add
 push local 1
 push constant 8
 call Math.multiply 2
-push constant 7
+push local 2
 add
 call Screen.drawRectangle 4
 pop temp 0
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP0
+label WHILE_END0
 goto IF_END0
 label IF_FALSE0
 push constant 0
 call Screen.setColor 1
 pop temp 0
+label WHILE_EXP1
+push local 2
+push constant 7
+lt
+not
+if-goto WHILE_END1
 push local 0
 push constant 8
 call Math.multiply 2
@@ -89,15 +108,21 @@ call Math.multiply 2
 push local 0
 push constant 8
 call Math.multiply 2
-push constant 7
+push local 2
 add
 push local 1
 push constant 8
 call Math.multiply 2
-push constant 7
+push local 2
 add
 call Screen.drawRectangle 4
 pop temp 0
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP1
+label WHILE_END1
 label IF_END0
 push constant 0
 return

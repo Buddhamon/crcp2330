@@ -10,7 +10,7 @@ class Cell
    constructor Cell new_i(int i) 
    {  
       let index = i;
-      let alive = true;
+      let alive = false;
       return this;   // a constructor is expected to return a reference to the new object
    }
 
@@ -39,21 +39,29 @@ class Cell
    {
       var int row;
       var int col;
+      var int size;
       let col = index/64;
       let row = index-(col*64);
-      
+      let size = 0;
 
       if(alive)
       {
          do Screen.setColor(true);
-         do Screen.drawRectangle(row*8, col*8, (row*8)+7, (col*8)+7);
+         while(size < 7)
+         {
+            do Screen.drawRectangle(row*8, col*8, (row*8)+size, (col*8)+size);
+            let size = size + 1;
+         }
       }
       else
       {
          do Screen.setColor(false);
-         do Screen.drawRectangle(row*8, col*8, (row*8)+7, (col*8)+7);
+         while(size < 7)
+         {
+            do Screen.drawRectangle(row*8, col*8, (row*8)+size, (col*8)+size);
+            let size = size + 1;
+         }
       }
-
       return;
    }
 
