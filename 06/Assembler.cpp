@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <map>
 
 using namespace std;
 
@@ -22,9 +23,9 @@ void replaceInstructions();
 void outputHackFile(char*);
 
 vector<string> linesOfCode;
-map<string, string> dest;
-map<string, string> comp;
-map<string, string> jump;
+map<string, string> destMap;
+map<string, string> compMap;
+map<string, string> jumpMap;
 map<string, string> addressMap;
 
 // Main Runner for Assembler.cpp
@@ -40,6 +41,8 @@ int main(int argc, char* inputFile[])
 	removeComments();
 	removeWhiteSpace();
 	deleteEmptyLines();
+	replaceLabels();
+	replaceInstructions();
 
 	outputHackFile(inputFile[1]);
 	return 0;
@@ -60,53 +63,53 @@ void readASMMFile(char* inputFile)
 // Initializes instruction maps 
 void initializeMaps()
 {
-	dest["null"] = 	"000";
-	dest["M"] = 	"001";
-	dest["D"] = 	"010";
-	dest["MD"] = 	"011";
-	dest["A"] = 	"100";
-	dest["AM"] = 	"101";
-	dest["AD"] = 	"110";
-	dest["AMD"] = 	"111";
+	destMap["null"] = 	"000";
+	destMap["M"] = 		"001";
+	destMap["D"] = 		"010";
+	destMap["MD"] = 	"011";
+	destMap["A"] = 		"100";
+	destMap["AM"] = 	"101";
+	destMap["AD"] = 	"110";
+	destMap["AMD"] = 	"111";
 
-	comp["0"] = 	"0101010"
-	comp["1"] = 	"0111111"
-	comp["-1"] = 	"0111010"
-	comp["D"] = 	"0001100"
-	comp["A"] = 	"0110000"
-	comp["!D"] = 	"0001101"
-	comp["!A"] = 	"0110001"
-	comp["-D"] = 	"0001111"
-	comp["-A"] = 	"0110011"
-	comp["D+1"] = 	"0011111"
-	comp["A+1"] = 	"0110111"
-	comp["D-1"] = 	"0001110"
-	comp["A-1"] = 	"0110010"
-	comp["D+A"] = 	"0000010"
-	comp["D-A"] = 	"0010011"
-	comp["A-D"] = 	"0000111"
-	comp["D&A"] = 	"0000000"
-	comp["D|A"] = 	"0010101"
+	compMap["0"] = 		"0101010";
+	compMap["1"] = 		"0111111";
+	compMap["-1"] = 	"0111010";
+	compMap["D"] = 		"0001100";
+	compMap["A"] = 		"0110000";
+	compMap["!D"] = 	"0001101";
+	compMap["!A"] = 	"0110001";
+	compMap["-D"] = 	"0001111";
+	compMap["-A"] = 	"0110011";
+	compMap["D+1"] = 	"0011111";
+	compMap["A+1"] = 	"0110111";
+	compMap["D-1"] = 	"0001110";
+	compMap["A-1"] = 	"0110010";
+	compMap["D+A"] = 	"0000010";
+	compMap["D-A"] = 	"0010011";
+	compMap["A-D"] = 	"0000111";
+	compMap["D&A"] = 	"0000000";
+	compMap["D|A"] = 	"0010101";
 
-	comp["M"] = 	"1110000"
-	comp["!M"] = 	"1110001"
-	comp["-M"] = 	"1110011"
-	comp["M+1"] = 	"1110111"
-	comp["M-1"] = 	"1110010"
-	comp["D+M"] = 	"1000010"
-	comp["D-M"] = 	"1010011"
-	comp["M-D"] = 	"1000111"
-	comp["D&A"] = 	"1000000"
-	comp["D|A"] = 	"1010101"
+	compMap["M"] = 		"1110000";
+	compMap["!M"] = 	"1110001";
+	compMap["-M"] = 	"1110011";
+	compMap["M+1"] = 	"1110111";
+	compMap["M-1"] = 	"1110010";
+	compMap["D+M"] = 	"1000010";
+	compMap["D-M"] = 	"1010011";
+	compMap["M-D"] = 	"1000111";
+	compMap["D&A"] = 	"1000000";
+	compMap["D|A"] = 	"1010101";
 
-	jump["null"] = 	"000";
-	jump["JGT"] = 	"001";
-	jump["JEQ"] = 	"010";
-	jump["JGE"] = 	"011";
-	jump["JLT"] = 	"100";
-	jump["JNE"] = 	"101";
-	jump["JNE"] = 	"110";
-	jump["JMP"] = 	"111";
+	jumpMap["null"] = 	"000";
+	jumpMap["JGT"] = 	"001";
+	jumpMap["JEQ"] = 	"010";
+	jumpMap["JGE"] = 	"011";
+	jumpMap["JLT"] = 	"100";
+	jumpMap["JNE"] = 	"101";
+	jumpMap["JNE"] = 	"110";
+	jumpMap["JMP"] = 	"111";
 }
 
 // Deletes all code that follows "//"" 
@@ -168,7 +171,7 @@ void replaceLabels()
 		for(int j = 0; j < linesOfCode[i].length() && isLabel; j++)
 		{
 			char c = linesOfCode[i].at(j);
-			if(c == '@' || c == "(")	
+			if(c == '@' || c == '(')	
 			{
 				linesOfCode[i] = "_" + linesOfCode[i]; // Temporary insertion to handle labels
 				isLabel = false;
@@ -184,7 +187,52 @@ void replaceLabels()
 // Replaces Hack c instructions with binary equivalents
 void replaceInstructions()
 {
+	for(int i = linesOfCode.size()-1; i >= 0; i--)
+	{
+		char c = linesOfCode[i].at(0); // Temporary insertion to handle labels
+		if(c != '_') // Temporary insertion to handle labels
+		{
+			string dest = "";
+			string comp = "";
+			string jump = "";
+			char operation = ' ';
+			for(int j = 0; j < linesOfCode[i].length(); j++)
+			{
+				c = linesOfCode[i].at(j);
+				if(operation == ' ' && c != '=' && c != ';')
+				{
+					dest = dest + c; // Assume destination leads the Hack instruction and operation will be '='
+				}
+				else if(operation == ' ')
+				{
+					operation = c;
+					if(operation == '=')
+					{
+						jump = "null";
+					}
+					else
+					{
+						comp = dest; // If the operation is ';', then dest was improperly built
+						dest = "null";
+					}
+				}
+				else if(operation == '=')
+				{
 
+					comp = comp + c;
+				}
+				else if(operation == ';')
+				{
+					jump = jump + c;
+				}
+			}
+			string binaryCode = "111";
+			binaryCode = binaryCode + compMap.find(comp)->second;
+			binaryCode = binaryCode + destMap.find(dest)->second;
+			binaryCode = binaryCode + jumpMap.find(jump)->second;
+			linesOfCode[i] = binaryCode;
+		}
+	}
 }
 
 // Output of Assembler.cpp, creates a .hack file containing binary hack code
