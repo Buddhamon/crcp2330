@@ -14,6 +14,11 @@ class Fraction {
       do reduce();   // reduces the fraction
       return this;   // a constructor is expected to return a reference to the new object
    }
+   constructor Fraction new_f(Fraction f) {
+      let numerator = f.getNumerator();
+      let denominator = f.getDenominator();
+      return this;   // a constructor is expected to return a reference to the new object
+   }
 
    // Reduces this fraction.
    method void reduce() {

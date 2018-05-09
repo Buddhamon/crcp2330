@@ -11,6 +11,18 @@ call Fraction.reduce 1
 pop temp 0
 push pointer 0
 return
+function Fraction.new_f 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+call Fraction.getNumerator 1
+pop this 0
+push argument 0
+call Fraction.getDenominator 1
+pop this 1
+push pointer 0
+return
 function Fraction.reduce 1
 push argument 0
 pop pointer 0

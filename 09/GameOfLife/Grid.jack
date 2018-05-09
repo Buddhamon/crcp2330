@@ -37,21 +37,67 @@ class Grid
       var Cell cell;
       var int index;
 
-      if(option = 1) // rock
+      if(option = 1) // starved rock
       {
          let totalAliveCells = 4;
-         let index = getCellIndex(15, 31);
-         let cell = grid[index];
-         do cell.spawns();
-         let index = getCellIndex(15, 32);
-         let cell = grid[index];
-         do cell.spawns();
-         let index = getCellIndex(16, 31);
-         let cell = grid[index];
-         do cell.spawns();
-         let index = getCellIndex(16, 32);
-         let cell = grid[index];
-         do cell.spawns();
+         do createCell(15, 31);
+         do createCell(15, 32);
+         do createCell(16, 31);
+         do createCell(16, 32);
+      }
+      if(option = 2) // simple example
+      {
+         let totalAliveCells = 5;
+         do createCell(15, 31);
+         do createCell(15, 32);
+         do createCell(16, 31);
+         do createCell(16, 32);
+
+         do createCell(14, 30);
+         do createCell(15, 33);
+         do createCell(5, 5);
+         do createCell(6, 5);
+         do createCell(7, 5);
+         do createCell(8, 5);
+         do createCell(9, 5);
+      }
+
+      if(option = 3) // simple example
+      {
+         let totalAliveCells = 5;
+         do createCell(15, 31);
+         do createCell(15, 32);
+         do createCell(16, 31);
+         do createCell(16, 32);
+         do createCell(14, 30);
+         do createCell(15, 33);
+         do createCell(13, 29);
+         do createCell(16, 33);
+         do createCell(17, 32);
+         do createCell(17, 30);
+
+         do createCell(10, 40);
+         do createCell(11, 41);
+         do createCell(12, 43);
+         do createCell(13, 44);
+         do createCell(13, 44);
+
+         do createCell(25, 5);
+         do createCell(25, 6);
+         do createCell(26, 5);
+         do createCell(26, 6);
+
+         do createCell(5, 5);
+         do createCell(6, 5);
+         do createCell(7, 5);
+         do createCell(8, 5);
+         do createCell(9, 5);
+         do createCell(5, 6);
+         do createCell(5, 7);
+         do createCell(5, 8);
+         do createCell(5, 9);
+         do createCell(5, 10);
+         do createCell(9, 9);
       }
 
       return;
@@ -66,15 +112,17 @@ class Grid
       var Cell grid_cell;
       var int index;
       var int alive;
-      var Grid temp_grid;
+      var Array grid_holder;
 
       let index = 0;
-      while(index < grid_length) // initializing temp_grid
-      {
-         let temp_grid_cell = grid[index];
-         let temp_grid[index] = Cell.new_i(temp_grid_cell);
-         let index = index + 1;
-      }
+      let grid_holder = Array.new(grid_length);
+      //while(index < grid_length) // initializing grid_holder
+      //{
+      //   let grid_cell = grid[index];
+      //   let grid_holder[index] = Cell.new_c(grid_cell);
+      //   let index = index + 1;
+      //}
+      let grid_holder = grid;
 
       let totalAliveCells = 0;
       let row = 0;
@@ -87,7 +135,7 @@ class Grid
          while(col < grid_cols)
          { 
             let index = getCellIndex(row, col);
-            let temp_grid_cell = temp_grid[index];
+            let temp_grid_cell = grid_holder[index];
             let neighborCount = cellNeighborCount(row, col);
             if(neighborCount < 2 & temp_grid_cell.isAlive()) // rule 1 - under population
             {
@@ -106,19 +154,14 @@ class Grid
                do temp_grid_cell.spawns();
                let totalAliveCells = totalAliveCells + 1;
             }
-            else
-            {
-               do Output.printString("1 tick - Rule Error ");
-               do Sys.error(0);
-            }
             let col = col + 1;
          }
          let row = row + 1;
       }
 
-      while(index < grid_length) // setting grid equal to temp_grid
+      while(index < grid_length) // setting grid equal to grid_holder
       {
-         let temp_grid_cell = temp_grid[index];
+         let temp_grid_cell = grid_holder[index];
          let grid_cell = grid[index];
          let alive = temp_grid_cell.isAlive();
          if(alive)
@@ -132,7 +175,15 @@ class Grid
          let index = index + 1;
       }
 
-      do temp_grid.dispose();
+      let index = 0;
+      while(index < grid_length) // disposing grid_holder
+      {
+         let temp_grid_cell = grid_holder[index];
+         do temp_grid_cell.dispose();
+         let index = index + 1;
+      }
+      do grid_holder.dispose();
+      
       return;
    }
 
@@ -154,8 +205,8 @@ class Grid
 
       // Checks to see which neighbors the cell has
       if(row > 0) { let up = true;}
-      if(col < grid_cols) { let right = true;}
-      if(row < 0) { let down = true;}
+      if(col < (grid_cols-1)) { let right = true;}
+      if(row < (grid_rows-1)) { let down = true;}
       if(col > 0) { let left = true;}
 
       let neighborCount = 0;
@@ -249,27 +300,38 @@ class Grid
       if(row > (grid_rows - 1))
       {
          do Output.printString("1 getCell - Out of Bounds ");
-         do Sys.error(0);
+         do Sys.error(-1);
       }
       if(row < 0)
       {
          do Output.printString("2 getCell - Out of Bounds ");
-         do Sys.error(0);
+         do Sys.error(-1);
       }
       if(col > (grid_cols - 1))
       {
          do Output.printString("3 getCell - Out of Bounds ");
-         do Sys.error(0);
+         do Sys.error(-1);
       }
       if(col < 0)
       {
          do Output.printString("4 getCell - Out of Bounds ");
-         do Sys.error(0);
+         do Sys.error(-1);
       }
       let index = col;
       let index = index + (row*64);
       return index;
    }
+
+   method void createCell(int row, int col)
+   {
+      var int index;
+      var Cell cell;
+      let index = getCellIndex(row, col);
+      let cell = grid[index];
+      do cell.spawns();
+      return;
+   } 
+
 
    method void draw() 
    {

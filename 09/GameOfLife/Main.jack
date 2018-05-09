@@ -11,17 +11,20 @@ class Main
 		var int index;
 		var char escape;
 
+		var int count;
+		let count = 0;
+
 		let grid = Grid.new();
-		do grid.map(1);
+		do grid.map(3);
 
 		// make grid or spawn seed
 
 		let running = true;
 		while(running)
 		{
-			do Sys.wait(300);
-		//	do grid.tick();
 			do grid.draw();
+
+			do grid.tick();
 		
 			if(grid.getTotalAliveCells() = 0) // population has died
 			{
@@ -31,6 +34,11 @@ class Main
 			{
 				let running = false;
 			}
+			//if(count = 6)
+			//{
+			//	let running = false;
+			//}
+			//let count = count + 1;
 		}
 		
 		return;
