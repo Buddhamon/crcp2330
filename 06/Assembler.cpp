@@ -7,12 +7,18 @@
 using namespace std;
 
 void readASMMFile(char*);
+void initializeMaps();
 void removeComments();
 void removeWhiteSpace();
 void deleteEmptyLines();
+void replaceLabels();
 void outputHackFile(char*);
 
 vector<string> linesOfCode;
+map<string, string> dest;
+map<string, string> comp;
+map<string, string> jump;
+map<string, string> addressMap;
 
 int main(int argc, char* inputFile[])
 {
@@ -22,7 +28,7 @@ int main(int argc, char* inputFile[])
 		exit(1);
 	}
 	readASMMFile(inputFile[1]);
-
+	initializeMaps();
 	removeComments();
 	removeWhiteSpace();
 	deleteEmptyLines();
@@ -42,6 +48,57 @@ void readASMMFile(char* inputFile)
 	}
 }
 
+void initializeMaps()
+{
+	dest["null"] = 	"000";
+	dest["M"] = 	"001";
+	dest["D"] = 	"010";
+	dest["MD"] = 	"011";
+	dest["A"] = 	"100";
+	dest["AM"] = 	"101";
+	dest["AD"] = 	"110";
+	dest["AMD"] = 	"111";
+
+	comp["0"] = 	"0101010"
+	comp["1"] = 	"0111111"
+	comp["-1"] = 	"0111010"
+	comp["D"] = 	"0001100"
+	comp["A"] = 	"0110000"
+	comp["!D"] = 	"0001101"
+	comp["!A"] = 	"0110001"
+	comp["-D"] = 	"0001111"
+	comp["-A"] = 	"0110011"
+	comp["D+1"] = 	"0011111"
+	comp["A+1"] = 	"0110111"
+	comp["D-1"] = 	"0001110"
+	comp["A-1"] = 	"0110010"
+	comp["D+A"] = 	"0000010"
+	comp["D-A"] = 	"0010011"
+	comp["A-D"] = 	"0000111"
+	comp["D&A"] = 	"0000000"
+	comp["D|A"] = 	"0010101"
+
+	comp["M"] = 	"1110000"
+	comp["!M"] = 	"1110001"
+	comp["-M"] = 	"1110011"
+	comp["M+1"] = 	"1110111"
+	comp["M-1"] = 	"1110010"
+	comp["D+M"] = 	"1000010"
+	comp["D-M"] = 	"1010011"
+	comp["M-D"] = 	"1000111"
+	comp["D&A"] = 	"1000000"
+	comp["D|A"] = 	"1010101"
+
+	jump["null"] = 	"000";
+	jump["JGT"] = 	"001";
+	jump["JEQ"] = 	"010";
+	jump["JGE"] = 	"011";
+	jump["JLT"] = 	"100";
+	jump["JNE"] = 	"101";
+	jump["JNE"] = 	"110";
+	jump["JMP"] = 	"111";
+}
+
 void removeComments()
 {
 	string comments = "//";
@@ -56,7 +113,7 @@ void removeComments()
 			{
 				noCommentFound = false;
 				int newLineLength = lineLength - (lineLength - j);
-				string shortenedLine = linesOfCode[i].substr(j, newLineLength);
+				string shortenedLine = linesOfCode[i].substr(0, newLineLength);
 				linesOfCode[i] = shortenedLine;
 			}
 		}
@@ -87,6 +144,11 @@ void deleteEmptyLines()
 			linesOfCode.erase(linesOfCode.begin() + i);
 		}
 	}
+}
+
+void replaceLabels()
+{
+
 }
 
 void outputHackFile(char* inputFile)
