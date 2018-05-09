@@ -1,0 +1,119 @@
+// Will Lacey
+// May 8th 2018
+// Game of Life in Jack - Grid
+
+class Grid 
+{
+   field int grid_rows;
+   field int grid_cols;
+   field int grid_length;
+   field Array grid; // 64 by 32, squares with side of 8 pixels?
+
+   constructor Grid new() 
+   {  
+      var int i;
+      let i = 0;
+
+      let grid_rows = 32;
+      let grid_cols = 64;
+      let grid_length = 64*32;
+
+      let grid = Array.new(grid_length); // constructs the array
+
+      while(i < grid_length) // initializing array
+      {
+         let grid[i] = Cell.new(i);
+         let i = i + 1;
+      }
+
+      return this;   // a constructor is expected to return a reference to the new object
+   }
+
+   method int getCellIndex(int row, int col)
+   {
+      var int index;
+      if(row > (grid_rows - 1))
+      {
+         do Output.printString("1 getCell - Out of Bounds ");
+         do Sys.error(0);
+      }
+      if(row < 0)
+      {
+         do Output.printString("2 getCell - Out of Bounds ");
+         do Sys.error(0);
+      }
+      if(col > (grid_cols - 1))
+      {
+         do Output.printString("3 getCell - Out of Bounds ");
+         do Sys.error(0);
+      }
+      if(col < 0)
+      {
+         do Output.printString("4 getCell - Out of Bounds ");
+         do Sys.error(0);
+      }
+      let index = col;
+      let index = index + (row*64);
+      return index;
+   }
+
+   method void temp()
+   {
+      var Cell a;
+      var int index;
+      var int i;
+
+
+      let index = getCellIndex(0, 0);
+      //do Output.printInt(index);
+      //do Output.println();
+      let a = grid[index];
+      do a.draw();
+
+      let index = getCellIndex(grid_rows - 1, grid_cols-1);
+      //do Output.printInt(index);
+      //do Output.println();
+      let a = grid[index];
+      do a.draw();
+
+      let index = getCellIndex(30, 60);
+      //do Output.printInt(index);
+      //do Output.println();
+      let a = grid[index];
+      do a.draw();
+
+      let index = getCellIndex(29, 60);
+      //do Output.printInt(index);
+      //do Output.println();
+      let a = grid[index];
+      do a.draw();
+
+      let index = getCellIndex(5, 0);
+      //do Output.printInt(index);
+      //do Output.println();
+      let a = grid[index];
+      do a.draw();
+
+      let index = getCellIndex(1, 1);
+      do Output.printInt(index);
+      do Output.println();
+      let a = grid[index];
+      do a.draw();
+
+      //let i = 0;
+      //while(i < grid_length)
+      //{
+      //   let a = grid[i];
+      //   do a.draw();
+      //   let i = i + 1;
+      //}
+
+      return;
+   }
+
+   method void draw() 
+   {
+
+      return;
+   }
+}
