@@ -36,16 +36,18 @@ class Grid
    {
       var int row;
       var int col;
-      var int rule;
-      var Cell cell;
+      var int neighborCount;
+      var Cell temp_grid_cell;
+      var Cell grid_cell;
       var int index;
+      var int alive;
       var Grid temp_grid;
 
       let index = 0;
       while(index < grid_length) // initializing temp_grid
       {
-         let cell = grid[index];
-         let temp_grid[index] = Cell.new_i(cell);
+         let temp_grid_cell = grid[index];
+         let temp_grid[index] = Cell.new_i(temp_grid_cell);
          let index = index + 1;
       }
 
@@ -60,22 +62,23 @@ class Grid
          while(col < grid_cols)
          { 
             let index = getCellIndex(row, col);
-            let rule = checkCell(row, col);
-            if(rule = 1)
+            let temp_grid_cell = temp_grid[index];
+            let neighborCount = cellNeighborCount(row, col);
+            if(neighborCount < 2 & temp_grid_cell.isAlive()) // rule 1 - under population
             {
-               do cell.dies();
+               do temp_grid_cell.dies();
             }
-            if(rule = 2)
+            if(1 < neighborCount & neighborCount < 4 & temp_grid_cell.isAlive()) // rule 2 - starvation
             {
                // do nothing
             }
-            if(rule = 3)
+            if(neighborCount > 3 & temp_grid_cell.isAlive()) // rule 3 - over population
             {
-               do cell.dies();
+               do temp_grid_cell.dies();
             }
-            if(rule = 4)
+            if(neighborCount = 3 & ~temp_grid_cell.isAlive()) // rule 4 - repopulation
             {
-               do cell.spawns();
+               do temp_grid_cell.spawns();
                let totalAliveCells = totalAliveCells + 1;
             }
             else
@@ -87,12 +90,33 @@ class Grid
          }
          let row = row + 1;
       }
+
+      while(index < grid_length) // setting grid equal to temp_grid
+      {
+         let temp_grid_cell = temp_grid[index];
+         let grid_cell = grid[index];
+         let alive = temp_grid_cell.isAlive();
+         if(alive)
+         {
+            do grid_cell.spawns();
+         }
+         else
+         {
+            do grid_cell.dies();
+         }
+         let index = index + 1;
+      }
+
+      do temp_grid.dispose();
       return;
    }
 
-   method int checkCell(int row, int col)
+   method int cellNeighborCount(int row, int col)
    {
-      var int neighborSum;
+      var int neighborCount;
+      var Cell neighbor_cell;
+      var int index;
+      var boolean alive;
 
       var boolean up;
       var boolean right;
@@ -103,53 +127,95 @@ class Grid
       let down = false;
       let left = false;
 
+      // Checks to see which neighbors the cell has
       if(row > 0) { let up = true;}
       if(col < grid_cols) { let right = true;}
       if(row < 0) { let down = true;}
       if(col > 0) { let left = true;}
 
+      let neighborCount = 0;
+
       if(up)
       {
-         //if()
-         //{
-
-         //}
+         let index = getCellIndex(row-1, col);
+         let neighbor_cell = grid[index];
+         let alive = neighbor_cell.isAlive();
+         if(alive)
+         {
+            let neighborCount = neighborCount + 1;
+         }
       }
       if(up & right)
       {
-      
+         let index = getCellIndex(row-1, col+1);
+         let neighbor_cell = grid[index];
+         let alive = neighbor_cell.isAlive();
+         if(alive)
+         {
+            let neighborCount = neighborCount + 1;
+         }
       }
       if(right)
       {
-      
+         let index = getCellIndex(row, col+1);
+         let neighbor_cell = grid[index];
+         let alive = neighbor_cell.isAlive();
+         if(alive)
+         {
+            let neighborCount = neighborCount + 1;
+         }
       }
       if(down & right)
       {
-      
+         let index = getCellIndex(row+1, col+1);
+         let neighbor_cell = grid[index];
+         let alive = neighbor_cell.isAlive();
+         if(alive)
+         {
+            let neighborCount = neighborCount + 1;
+         }
       }
       if(down)
       {
-      
+         let index = getCellIndex(row+1, col);
+         let neighbor_cell = grid[index];
+         let alive = neighbor_cell.isAlive();
+         if(alive)
+         {
+            let neighborCount = neighborCount + 1;
+         }
       }
       if(down & left)
       {
-      
+         let index = getCellIndex(row+1, col-1);
+         let neighbor_cell = grid[index];
+         let alive = neighbor_cell.isAlive();
+         if(alive)
+         {
+            let neighborCount = neighborCount + 1;
+         }
       }
       if(left)
       {
-      
+         let index = getCellIndex(row, col-1);
+         let neighbor_cell = grid[index];
+         let alive = neighbor_cell.isAlive();
+         if(alive)
+         {
+            let neighborCount = neighborCount + 1;
+         }
       }
       if(up & left)
       {
-      
+         let index = getCellIndex(row-1, col-1);
+         let neighbor_cell = grid[index];
+         let alive = neighbor_cell.isAlive();
+         if(alive)
+         {
+            let neighborCount = neighborCount + 1;
+         }
       }
-
-      // check 8 directions
-      // make sure not edge
-
-      // respond 4 rules
-
-      return -1;
+      return neighborCount;
    }
 
    method int getCellIndex(int row, int col)

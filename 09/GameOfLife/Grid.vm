@@ -40,25 +40,25 @@ goto WHILE_EXP0
 label WHILE_END0
 push pointer 0
 return
-function Grid.tick 6
+function Grid.tick 8
 push argument 0
 pop pointer 0
 push constant 0
-pop local 4
+pop local 5
 label WHILE_EXP0
-push local 4
+push local 5
 push this 3
 lt
 not
 if-goto WHILE_END0
-push local 4
+push local 5
 push this 0
 add
 pop pointer 1
 push that 0
 pop local 3
-push local 4
 push local 5
+push local 7
 add
 push local 3
 call Cell.new_i 1
@@ -66,10 +66,10 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-push local 4
+push local 5
 push constant 1
 add
-pop local 4
+pop local 5
 goto WHILE_EXP0
 label WHILE_END0
 push constant 0
@@ -96,15 +96,24 @@ push pointer 0
 push local 0
 push local 1
 call Grid.getCellIndex 3
-pop local 4
+pop local 5
+push local 5
+push local 7
+add
+pop pointer 1
+push that 0
+pop local 3
 push pointer 0
 push local 0
 push local 1
-call Grid.checkCell 3
+call Grid.cellNeighborCount 3
 pop local 2
 push local 2
-push constant 1
-eq
+push constant 2
+lt
+push local 3
+call Cell.isAlive 1
+and
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
@@ -112,16 +121,26 @@ push local 3
 call Cell.dies 1
 pop temp 0
 label IF_FALSE0
+push constant 1
 push local 2
-push constant 2
-eq
+lt
+push local 2
+and
+push constant 4
+lt
+push local 3
+call Cell.isAlive 1
+and
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
 label IF_FALSE1
 push local 2
 push constant 3
-eq
+gt
+push local 3
+call Cell.isAlive 1
+and
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
@@ -130,8 +149,12 @@ call Cell.dies 1
 pop temp 0
 label IF_FALSE2
 push local 2
-push constant 4
+push constant 3
 eq
+push local 3
+call Cell.isAlive 1
+not
+and
 if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
@@ -204,19 +227,62 @@ add
 pop local 0
 goto WHILE_EXP1
 label WHILE_END1
+label WHILE_EXP3
+push local 5
+push this 3
+lt
+not
+if-goto WHILE_END3
+push local 5
+push local 7
+add
+pop pointer 1
+push that 0
+pop local 3
+push local 5
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 4
+push local 3
+call Cell.isAlive 1
+pop local 6
+push local 6
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 4
+call Cell.spawns 1
+pop temp 0
+goto IF_END4
+label IF_FALSE4
+push local 4
+call Cell.dies 1
+pop temp 0
+label IF_END4
+push local 5
+push constant 1
+add
+pop local 5
+goto WHILE_EXP3
+label WHILE_END3
+push local 7
+call Grid.dispose 1
+pop temp 0
 push constant 0
 return
-function Grid.checkCell 5
+function Grid.cellNeighborCount 8
 push argument 0
 pop pointer 0
 push constant 0
-pop local 1
-push constant 0
-pop local 2
-push constant 0
-pop local 3
-push constant 0
 pop local 4
+push constant 0
+pop local 5
+push constant 0
+pop local 6
+push constant 0
+pop local 7
 push argument 1
 push constant 0
 gt
@@ -225,7 +291,7 @@ goto IF_FALSE0
 label IF_TRUE0
 push constant 0
 not
-pop local 1
+pop local 4
 label IF_FALSE0
 push argument 2
 push this 2
@@ -235,7 +301,7 @@ goto IF_FALSE1
 label IF_TRUE1
 push constant 0
 not
-pop local 2
+pop local 5
 label IF_FALSE1
 push argument 1
 push constant 0
@@ -245,7 +311,7 @@ goto IF_FALSE2
 label IF_TRUE2
 push constant 0
 not
-pop local 3
+pop local 6
 label IF_FALSE2
 push argument 2
 push constant 0
@@ -255,58 +321,267 @@ goto IF_FALSE3
 label IF_TRUE3
 push constant 0
 not
-pop local 4
+pop local 7
 label IF_FALSE3
-push local 1
+push constant 0
+pop local 0
+push local 4
 if-goto IF_TRUE4
 goto IF_FALSE4
 label IF_TRUE4
-label IF_FALSE4
-push local 1
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+call Grid.getCellIndex 3
+pop local 2
 push local 2
-and
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push local 1
+call Cell.isAlive 1
+pop local 3
+push local 3
 if-goto IF_TRUE5
 goto IF_FALSE5
 label IF_TRUE5
+push local 0
+push constant 1
+add
+pop local 0
 label IF_FALSE5
-push local 2
+label IF_FALSE4
+push local 4
+push local 5
+and
 if-goto IF_TRUE6
 goto IF_FALSE6
 label IF_TRUE6
-label IF_FALSE6
-push local 3
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+add
+call Grid.getCellIndex 3
+pop local 2
 push local 2
-and
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push local 1
+call Cell.isAlive 1
+pop local 3
+push local 3
 if-goto IF_TRUE7
 goto IF_FALSE7
 label IF_TRUE7
+push local 0
+push constant 1
+add
+pop local 0
 label IF_FALSE7
-push local 3
+label IF_FALSE6
+push local 5
 if-goto IF_TRUE8
 goto IF_FALSE8
 label IF_TRUE8
-label IF_FALSE8
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+add
+call Grid.getCellIndex 3
+pop local 2
+push local 2
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push local 1
+call Cell.isAlive 1
+pop local 3
 push local 3
-push local 4
-and
 if-goto IF_TRUE9
 goto IF_FALSE9
 label IF_TRUE9
+push local 0
+push constant 1
+add
+pop local 0
 label IF_FALSE9
-push local 4
+label IF_FALSE8
+push local 6
+push local 5
+and
 if-goto IF_TRUE10
 goto IF_FALSE10
 label IF_TRUE10
-label IF_FALSE10
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+add
+call Grid.getCellIndex 3
+pop local 2
+push local 2
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
 push local 1
-push local 4
-and
+call Cell.isAlive 1
+pop local 3
+push local 3
 if-goto IF_TRUE11
 goto IF_FALSE11
 label IF_TRUE11
-label IF_FALSE11
+push local 0
 push constant 1
-neg
+add
+pop local 0
+label IF_FALSE11
+label IF_FALSE10
+push local 6
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+call Grid.getCellIndex 3
+pop local 2
+push local 2
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push local 1
+call Cell.isAlive 1
+pop local 3
+push local 3
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
+push local 0
+push constant 1
+add
+pop local 0
+label IF_FALSE13
+label IF_FALSE12
+push local 6
+push local 7
+and
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+sub
+call Grid.getCellIndex 3
+pop local 2
+push local 2
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push local 1
+call Cell.isAlive 1
+pop local 3
+push local 3
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
+push local 0
+push constant 1
+add
+pop local 0
+label IF_FALSE15
+label IF_FALSE14
+push local 7
+if-goto IF_TRUE16
+goto IF_FALSE16
+label IF_TRUE16
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+sub
+call Grid.getCellIndex 3
+pop local 2
+push local 2
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push local 1
+call Cell.isAlive 1
+pop local 3
+push local 3
+if-goto IF_TRUE17
+goto IF_FALSE17
+label IF_TRUE17
+push local 0
+push constant 1
+add
+pop local 0
+label IF_FALSE17
+label IF_FALSE16
+push local 4
+push local 7
+and
+if-goto IF_TRUE18
+goto IF_FALSE18
+label IF_TRUE18
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+sub
+call Grid.getCellIndex 3
+pop local 2
+push local 2
+push this 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push local 1
+call Cell.isAlive 1
+pop local 3
+push local 3
+if-goto IF_TRUE19
+goto IF_FALSE19
+label IF_TRUE19
+push local 0
+push constant 1
+add
+pop local 0
+label IF_FALSE19
+label IF_FALSE18
+push local 0
 return
 function Grid.getCellIndex 1
 push argument 0
