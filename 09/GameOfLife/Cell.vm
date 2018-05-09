@@ -1,7 +1,9 @@
 function Cell.new 0
-push constant 1
+push constant 2
 call Memory.alloc 1
 pop pointer 0
+push argument 0
+pop this 1
 push pointer 0
 return
 function Cell.turn_on 0
@@ -17,6 +19,18 @@ push argument 0
 pop pointer 0
 push constant 0
 pop this 0
+push constant 0
+return
+function Cell.draw 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push this 1
+call Output.printInt 1
+pop temp 0
 push constant 0
 return
 function Cell.get_alive 0

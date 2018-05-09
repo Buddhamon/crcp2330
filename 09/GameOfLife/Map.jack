@@ -4,12 +4,38 @@
 
 class Map 
 {
-   field Array map;
+   field int map_rows;
+   field int map_cols;
+   field int map_length;
+   field Array map; // 64 by 32, squares with side of 8 pixels?
 
    constructor Map new() 
    {  
+      var int i;
+      let i = 0;
+
+      let map_rows = 64;
+      let map_cols = 32;
+      let map_length = 64*32;
+
+      let map = Array.new(map_length); // constructs the array
+
+      while(i < map_length) // initializing array
+      {
+         let map[i] = Cell.new(i);
+         let i = i + 1;
+      }
 
       return this;   // a constructor is expected to return a reference to the new object
+   }
+
+   method void temp()
+   {
+      var Cell a;
+      let a = map[64];
+      do a.draw();
+
+      return;
    }
 
    method void draw() 
@@ -20,12 +46,12 @@ class Map
       let j = 0;
 
       do Screen.setColor(true);
-      while(i < 512)
+      while(i < 64)
       {
          let j = 0;
-         while(j < 256)
+         while(j < 32)
          {
-            do Screen.drawPixel(i, j);
+            do Screen.drawRectangle(i*8, j*8, (i*8)+7, (j*8)+7);
             let j = j + 1;
          }
          let i = i + 1;

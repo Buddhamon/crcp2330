@@ -5,10 +5,11 @@
 class Cell 
 {
    field boolean alive;
+   field int index;
 
-   constructor Cell new() 
+   constructor Cell new(int i) 
    {  
-      
+      let index = i;
       return this;   // a constructor is expected to return a reference to the new object
    }
 
@@ -23,6 +24,14 @@ class Cell
    method void turn_of() 
    {
       let alive = false;
+      return;
+   }
+
+   method void draw() 
+   {
+      do Screen.setColor(true);
+      do Output.printInt(index);
+
       return;
    }
 
